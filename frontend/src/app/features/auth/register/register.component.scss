@@ -1,0 +1,19 @@
+@use '../login/login.component.scss';
+
+.login-link {
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+  color: #757575;
+  padding: 8px 0;
+
+  a {
+    color: #283593;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

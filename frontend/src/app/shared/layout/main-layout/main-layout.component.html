@@ -1,0 +1,10 @@
+<div class="layout-wrapper">
+  <app-sidebar [open]="sidebarOpen" />
+
+  <div class="main-area" [class.sidebar-collapsed]="!sidebarOpen">
+    <app-navbar (menuToggle)="toggleSidebar()" />
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

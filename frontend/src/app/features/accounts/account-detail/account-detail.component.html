@@ -1,0 +1,80 @@
+<div class="page-container">
+
+  @if (loading) {
+    <div class="flex-center" style="height: 300px;">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else if (account) {
+
+    <a routerLink="/accounts" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Mis cuentas
+    </a>
+
+    <!-- Encabezado de cuenta -->
+    <mat-card class="account-header-card card-shadow">
+      <mat-card-content>
+        <div class="header-content">
+          <div class="account-type-icon" [class.corriente]="account.accountType === 'CORRIENTE'">
+            <mat-icon>{{ account.accountType === 'AHORROS' ? 'savings' : 'account_balance' }}</mat-icon>
+          </div>
+          <div class="account-info">
+            <h2>{{ account.accountType === 'AHORROS' ? 'Cuenta de Ahorros' : 'Cuenta Corriente' }}</h2>
+            <p class="account-number">{{ account.accountNumber }}</p>
+            <p class="open-date text-muted">Abierta el {{ account.createdAt | date:'longDate':'':'es-CO' }}</p>
+          </div>
+          <div class="balance-section">
+            <p class="balance-label">Saldo disponible</p>
+            <p class="balance-value">{{ account.balance | currency:'COP':'symbol':'1.0-0' }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Historial de movimientos -->
+    <h2 class="section-title mt-24">Historial de movimientos</h2>
+
+    @if (txLoading) {
+      <div class="flex-center" style="height: 100px;">
+        <mat-spinner diameter="32" />
+      </div>
+    } @else if (!transactionPage || transactionPage.content.length === 0) {
+      <mat-card class="card-shadow">
+        <mat-card-content class="flex-center" style="padding: 40px;">
+          <p class="text-muted">No hay movimientos en esta cuenta.</p>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <mat-card class="card-shadow">
+        <mat-card-content style="padding: 0;">
+          @for (tx of transactionPage.content; track tx.id; let last = $last) {
+            <div class="transaction-item">
+              <div class="tx-icon" [class.debit]="isDebit(tx)" [class.credit]="!isDebit(tx)">
+                <mat-icon>{{ isDebit(tx) ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+              </div>
+              <div class="tx-info">
+                <p class="tx-description">{{ tx.description || (isDebit(tx) ? 'Transferencia enviada' : 'Transferencia recibida') }}</p>
+                <p class="tx-meta text-muted">
+                  {{ tx.referenceNumber }} &bull; {{ tx.createdAt | date:'dd MMM yyyy, HH:mm':'':'es-CO' }}
+                </p>
+              </div>
+              <p class="tx-amount" [class.debit-text]="isDebit(tx)" [class.credit-text]="!isDebit(tx)">
+                {{ isDebit(tx) ? '-' : '+' }}{{ tx.amount | currency:'COP':'symbol':'1.0-0' }}
+              </p>
+            </div>
+            @if (!last) { <mat-divider /> }
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-paginator
+        [length]="transactionPage.totalElements"
+        [pageSize]="pageSize"
+        [pageIndex]="currentPage"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+
+  }
+</div>

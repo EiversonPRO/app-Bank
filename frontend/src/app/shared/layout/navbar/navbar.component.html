@@ -1,0 +1,26 @@
+<mat-toolbar class="navbar">
+  <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="spacer"></span>
+
+  <!-- Avatar con menú -->
+  <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+    <div class="user-avatar">{{ getInitials() }}</div>
+    <span class="user-name">{{ authService.currentUser()?.fullName?.split(' ')?.[0] }}</span>
+    <mat-icon>expand_more</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <button mat-menu-item (click)="goToProfile()">
+      <mat-icon>person</mat-icon>
+      Mi perfil
+    </button>
+    <mat-divider />
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+  </mat-menu>
+</mat-toolbar>

@@ -1,0 +1,102 @@
+<div class="page-container">
+
+  @if (loading) {
+    <div class="flex-center" style="height: 300px;">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+
+    <!-- Encabezado -->
+    <div class="dashboard-header">
+      <div>
+        <h1 class="greeting">Hola, {{ userName }} 👋</h1>
+        <p class="subtitle text-muted">Aquí tienes el resumen de tus finanzas</p>
+      </div>
+      <button mat-raised-button color="primary" (click)="goToTransfer()">
+        <mat-icon>send</mat-icon>
+        Nueva transferencia
+      </button>
+    </div>
+
+    <!-- Tarjeta resumen total -->
+    <mat-card class="balance-card card-shadow">
+      <mat-card-content>
+        <div class="balance-info">
+          <div>
+            <p class="balance-label">Balance total</p>
+            <p class="balance-amount">{{ totalBalance | currency:'COP':'symbol':'1.0-0' }}</p>
+            <p class="balance-sub text-muted">{{ accounts.length }} cuenta{{ accounts.length !== 1 ? 's' : '' }} activa{{ accounts.length !== 1 ? 's' : '' }}</p>
+          </div>
+          <mat-icon class="balance-icon">account_balance_wallet</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Mis cuentas -->
+    <div class="section-header mt-24">
+      <h2>Mis cuentas</h2>
+      <a routerLink="/accounts" class="see-all">Ver todas</a>
+    </div>
+
+    @if (accounts.length === 0) {
+      <mat-card class="empty-card card-shadow">
+        <mat-card-content class="flex-center" style="flex-direction: column; gap: 12px; padding: 32px;">
+          <mat-icon style="font-size: 48px; color: #bdbdbd;">account_balance</mat-icon>
+          <p class="text-muted">Aún no tienes cuentas.</p>
+          <button mat-stroked-button color="primary" (click)="goToAccounts()">Abrir cuenta</button>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="accounts-grid">
+        @for (account of accounts; track account.id) {
+          <mat-card class="account-card card-shadow" [routerLink]="['/accounts', account.id]" style="cursor: pointer;">
+            <mat-card-content>
+              <div class="account-type-badge" [class.corriente]="account.accountType === 'CORRIENTE'">
+                <mat-icon>{{ account.accountType === 'AHORROS' ? 'savings' : 'account_balance' }}</mat-icon>
+                {{ account.accountType === 'AHORROS' ? 'Ahorros' : 'Corriente' }}
+              </div>
+              <p class="account-number text-muted">{{ account.accountNumber }}</p>
+              <p class="account-balance">{{ account.balance | currency:'COP':'symbol':'1.0-0' }}</p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+
+    <!-- Transacciones recientes -->
+    <div class="section-header mt-24">
+      <h2>Movimientos recientes</h2>
+    </div>
+
+    @if (recentTransactions.length === 0) {
+      <mat-card class="empty-card card-shadow">
+        <mat-card-content class="flex-center" style="padding: 32px;">
+          <p class="text-muted">No hay movimientos recientes.</p>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <mat-card class="card-shadow">
+        <mat-card-content style="padding: 0;">
+          @for (tx of recentTransactions; track tx.id; let last = $last) {
+            <div class="transaction-item">
+              <div class="tx-icon-wrapper" [class.debit]="isDebit(tx)" [class.credit]="!isDebit(tx)">
+                <mat-icon>{{ isDebit(tx) ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+              </div>
+              <div class="tx-info">
+                <p class="tx-description">{{ tx.description || (isDebit(tx) ? 'Transferencia enviada' : 'Transferencia recibida') }}</p>
+                <p class="tx-ref text-muted">{{ tx.referenceNumber }}</p>
+              </div>
+              <div class="tx-amount" [class.debit-text]="isDebit(tx)" [class.credit-text]="!isDebit(tx)">
+                {{ isDebit(tx) ? '-' : '+' }}{{ tx.amount | currency:'COP':'symbol':'1.0-0' }}
+              </div>
+            </div>
+            @if (!last) {
+              <mat-divider />
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+  }
+</div>

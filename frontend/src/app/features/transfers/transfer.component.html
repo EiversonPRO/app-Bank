@@ -1,0 +1,148 @@
+<div class="page-container">
+  <h1 class="page-title">Transferencias</h1>
+
+  @if (lastTransaction) {
+    <!-- Confirmación de transferencia exitosa -->
+    <mat-card class="success-card card-shadow">
+      <mat-card-content>
+        <div class="success-content">
+          <div class="success-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <h2>¡Transferencia exitosa!</h2>
+          <p class="ref-number">Ref. {{ lastTransaction.referenceNumber }}</p>
+          <p class="transfer-amount">{{ lastTransaction.amount | currency:'COP':'symbol':'1.0-0' }}</p>
+          <div class="transfer-detail">
+            <div class="detail-row">
+              <span class="text-muted">Desde</span>
+              <span>{{ lastTransaction.originAccountNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="text-muted">Hacia</span>
+              <span>{{ lastTransaction.destinationAccountNumber }}</span>
+            </div>
+            @if (lastTransaction.description) {
+              <div class="detail-row">
+                <span class="text-muted">Concepto</span>
+                <span>{{ lastTransaction.description }}</span>
+              </div>
+            }
+          </div>
+          <button mat-raised-button color="primary" (click)="newTransfer()">
+            Realizar otra transferencia
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  } @else {
+
+    <div class="transfer-layout">
+      <!-- Formulario -->
+      <mat-card class="transfer-form-card card-shadow">
+        <mat-card-header>
+          <mat-card-title>Nueva transferencia</mat-card-title>
+          <mat-card-subtitle>Envía dinero entre cuentas AppBank</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Cuenta de origen</mat-label>
+              <mat-select formControlName="originAccountNumber">
+                @if (loadingAccounts) {
+                  <mat-option disabled>Cargando cuentas...</mat-option>
+                }
+                @for (account of accounts; track account.id) {
+                  <mat-option [value]="account.accountNumber">
+                    {{ account.accountType === 'AHORROS' ? 'Ahorros' : 'Corriente' }} —
+                    {{ account.accountNumber }} —
+                    {{ account.balance | currency:'COP':'symbol':'1.0-0' }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (transferForm.get('originAccountNumber')?.hasError('required') && transferForm.get('originAccountNumber')?.touched) {
+                <mat-error>Selecciona una cuenta de origen</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width mt-16">
+              <mat-label>Número de cuenta destino</mat-label>
+              <input matInput formControlName="destinationAccountNumber"
+                     placeholder="APP0000000000" maxlength="13">
+              <mat-icon matPrefix>send</mat-icon>
+              <mat-hint>Número de 13 caracteres (ej: APP0123456789)</mat-hint>
+              @if (transferForm.get('destinationAccountNumber')?.hasError('required') && transferForm.get('destinationAccountNumber')?.touched) {
+                <mat-error>El número de cuenta destino es obligatorio</mat-error>
+              }
+              @if (transferForm.get('destinationAccountNumber')?.hasError('minlength') && transferForm.get('destinationAccountNumber')?.touched) {
+                <mat-error>El número de cuenta debe tener 13 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width mt-16">
+              <mat-label>Monto a transferir</mat-label>
+              <input matInput formControlName="amount" type="number" min="1000" placeholder="0">
+              <span matTextPrefix>$ &nbsp;</span>
+              <mat-hint>Monto mínimo: $1.000</mat-hint>
+              @if (transferForm.get('amount')?.hasError('required') && transferForm.get('amount')?.touched) {
+                <mat-error>Ingresa el monto</mat-error>
+              }
+              @if (transferForm.get('amount')?.hasError('min') && transferForm.get('amount')?.touched) {
+                <mat-error>El monto mínimo es $1.000</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width mt-16">
+              <mat-label>Descripción (opcional)</mat-label>
+              <input matInput formControlName="description" maxlength="200"
+                     placeholder="Ej: Pago de arriendo, cuota préstamo...">
+              <mat-icon matPrefix>notes</mat-icon>
+            </mat-form-field>
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="full-width mt-24 submit-btn"
+              [disabled]="transferForm.invalid || loading">
+              @if (loading) {
+                <mat-spinner diameter="20" />
+              } @else {
+                <ng-container>
+                  <mat-icon>send</mat-icon>
+                  Transferir
+                </ng-container>
+              }
+            </button>
+
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Panel informativo -->
+      @if (selectedAccount) {
+        <mat-card class="info-card card-shadow">
+          <mat-card-header>
+            <mat-card-title>Cuenta seleccionada</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-item">
+              <span class="text-muted">Tipo</span>
+              <span>{{ selectedAccount.accountType === 'AHORROS' ? 'Cuenta de Ahorros' : 'Cuenta Corriente' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="text-muted">Número</span>
+              <span class="mono">{{ selectedAccount.accountNumber }}</span>
+            </div>
+            <div class="info-item">
+              <span class="text-muted">Saldo disponible</span>
+              <strong class="available-balance">{{ selectedAccount.balance | currency:'COP':'symbol':'1.0-0' }}</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

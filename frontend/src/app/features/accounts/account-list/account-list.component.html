@@ -1,0 +1,56 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title" style="margin-bottom: 0;">Mis cuentas</h1>
+    <button mat-raised-button color="primary" (click)="openNewAccountDialog()">
+      <mat-icon>add</mat-icon>
+      Abrir cuenta
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="flex-center" style="height: 200px;">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else {
+
+    @if (accounts.length > 0) {
+      <mat-card class="summary-card card-shadow">
+        <mat-card-content>
+          <p class="summary-label">Balance consolidado</p>
+          <p class="summary-amount">{{ totalBalance | currency:'COP':'symbol':'1.0-0' }}</p>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (accounts.length === 0) {
+      <div class="empty-state">
+        <mat-icon>account_balance</mat-icon>
+        <p>Aún no tienes cuentas registradas</p>
+        <button mat-raised-button color="primary" (click)="openNewAccountDialog()">Abrir mi primera cuenta</button>
+      </div>
+    } @else {
+      <div class="accounts-list mt-24">
+        @for (account of accounts; track account.id) {
+          <mat-card class="account-row card-shadow" [routerLink]="['/accounts', account.id]">
+            <mat-card-content>
+              <div class="account-row-content">
+                <div class="account-icon" [class.corriente]="account.accountType === 'CORRIENTE'">
+                  <mat-icon>{{ account.accountType === 'AHORROS' ? 'savings' : 'account_balance' }}</mat-icon>
+                </div>
+                <div class="account-details">
+                  <p class="account-name">{{ account.accountType === 'AHORROS' ? 'Cuenta de Ahorros' : 'Cuenta Corriente' }}</p>
+                  <p class="account-number text-muted">{{ account.accountNumber }}</p>
+                </div>
+                <div class="account-balance-right">
+                  <p class="balance-value">{{ account.balance | currency:'COP':'symbol':'1.0-0' }}</p>
+                  <span class="status-badge">Activa</span>
+                </div>
+                <mat-icon class="chevron text-muted">chevron_right</mat-icon>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+</div>

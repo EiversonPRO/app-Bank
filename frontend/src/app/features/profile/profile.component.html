@@ -1,0 +1,118 @@
+<div class="page-container">
+  <h1 class="page-title">Mi perfil</h1>
+
+  @if (loading) {
+    <div class="flex-center" style="height: 200px;">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (user) {
+
+    <div class="profile-layout">
+
+      <!-- Avatar y datos principales -->
+      <mat-card class="profile-header-card card-shadow">
+        <mat-card-content>
+          <div class="avatar-section">
+            <div class="avatar">{{ getInitials() }}</div>
+            <h2>{{ user.fullName }}</h2>
+            <p class="text-muted">{{ user.email }}</p>
+            <p class="member-since text-muted">
+              <mat-icon>calendar_today</mat-icon>
+              Cliente desde {{ user.createdAt | date:'MMMM yyyy':'':'es-CO' }}
+            </p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Formulario de información -->
+      <mat-card class="profile-details-card card-shadow">
+        <mat-card-header>
+          <mat-card-title>Información personal</mat-card-title>
+          <div class="edit-actions">
+            @if (!editMode) {
+              <button mat-stroked-button color="primary" (click)="toggleEdit()">
+                <mat-icon>edit</mat-icon>
+                Editar
+              </button>
+            } @else {
+              <button mat-button (click)="toggleEdit()">Cancelar</button>
+              <button mat-raised-button color="primary" (click)="onSave()"
+                      [disabled]="editForm.invalid || saving">
+                @if (saving) {
+                  <mat-spinner diameter="18" />
+                } @else {
+                  Guardar
+                }
+              </button>
+            }
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          @if (!editMode) {
+            <!-- Vista de lectura -->
+            <div class="info-grid">
+              <div class="info-field">
+                <mat-icon>person</mat-icon>
+                <div>
+                  <p class="field-label text-muted">Nombre completo</p>
+                  <p class="field-value">{{ user.fullName }}</p>
+                </div>
+              </div>
+              <div class="info-field">
+                <mat-icon>email</mat-icon>
+                <div>
+                  <p class="field-label text-muted">Correo electrónico</p>
+                  <p class="field-value">{{ user.email }}</p>
+                </div>
+              </div>
+              <div class="info-field">
+                <mat-icon>badge</mat-icon>
+                <div>
+                  <p class="field-label text-muted">Número de documento</p>
+                  <p class="field-value">{{ user.documentNumber }}</p>
+                </div>
+              </div>
+              <div class="info-field">
+                <mat-icon>phone</mat-icon>
+                <div>
+                  <p class="field-label text-muted">Teléfono</p>
+                  <p class="field-value">{{ user.phone || 'No registrado' }}</p>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <!-- Vista de edición -->
+            <form [formGroup]="editForm" class="edit-form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nombre completo</mat-label>
+                <input matInput formControlName="fullName">
+                <mat-icon matPrefix>person</mat-icon>
+                @if (editForm.get('fullName')?.hasError('required') && editForm.get('fullName')?.touched) {
+                  <mat-error>El nombre es obligatorio</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width mt-16">
+                <mat-label>Correo electrónico</mat-label>
+                <input matInput [value]="user.email" readonly>
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-hint>El correo no se puede modificar</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width mt-16">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="phone" type="tel" placeholder="+57 300 000 0000">
+                <mat-icon matPrefix>phone</mat-icon>
+                @if (editForm.get('phone')?.hasError('pattern') && editForm.get('phone')?.touched) {
+                  <mat-error>Número de teléfono no válido</mat-error>
+                }
+              </mat-form-field>
+            </form>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  }
+</div>

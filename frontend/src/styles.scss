@@ -1,0 +1,106 @@
+@use '@angular/material' as mat;
+
+// Paleta personalizada para una app bancaria
+$appbank-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 800, 600, 900);
+$appbank-accent: mat.m2-define-palette(mat.$m2-teal-palette, A400, A200, A700);
+$appbank-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$appbank-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $appbank-primary,
+    accent: $appbank-accent,
+    warn: $appbank-warn,
+  ),
+  typography: mat.m2-define-typography-config(
+    $font-family: 'Roboto, sans-serif',
+  ),
+  density: 0,
+));
+
+@include mat.all-component-themes($appbank-theme);
+
+// Variables CSS globales
+:root {
+  --primary: #283593;
+  --primary-dark: #1a237e;
+  --primary-light: #3949ab;
+  --accent: #00bfa5;
+  --background: #f5f7fa;
+  --surface: #ffffff;
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --border: #e0e0e0;
+  --success: #4caf50;
+  --error: #f44336;
+  --warning: #ff9800;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+// Scrollbar global
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 3px;
+}
+
+// Utilidades
+.page-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.card-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.text-success { color: var(--success); }
+.text-error   { color: var(--error); }
+.text-warning { color: var(--warning); }
+.text-muted   { color: var(--text-secondary); }
+
+.mt-8  { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gap-8  { gap: 8px; }
+.gap-16 { gap: 16px; }

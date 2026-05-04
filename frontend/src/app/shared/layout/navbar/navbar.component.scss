@@ -1,0 +1,49 @@
+.navbar {
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border);
+  height: 64px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+  .menu-btn {
+    color: var(--text-secondary);
+  }
+
+  .spacer {
+    flex: 1;
+  }
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #283593, #3949ab);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  mat-icon:last-child {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
+  }
+}

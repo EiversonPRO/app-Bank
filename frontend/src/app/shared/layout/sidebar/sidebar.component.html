@@ -1,0 +1,28 @@
+<nav class="sidebar" [class.collapsed]="!open">
+  <!-- Logo -->
+  <div class="sidebar-brand">
+    <mat-icon class="brand-icon">account_balance</mat-icon>
+    @if (open) {
+      <span class="brand-name">AppBank</span>
+    }
+  </div>
+
+  <!-- Navegación -->
+  <ul class="nav-list">
+    @for (item of navItems; track item.route) {
+      <li>
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="nav-item"
+          [matTooltip]="!open ? item.label : ''"
+          matTooltipPosition="right">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          @if (open) {
+            <span class="nav-label">{{ item.label }}</span>
+          }
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
