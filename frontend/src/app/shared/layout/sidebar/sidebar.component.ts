@@ -25,6 +25,7 @@ export class SidebarComponent {
     { icon: 'dashboard',        label: 'Inicio',         route: '/dashboard'  },
     { icon: 'account_balance',  label: 'Mis cuentas',    route: '/accounts'   },
     { icon: 'send',             label: 'Transferencias', route: '/transfers'  },
+    { icon: 'add_circle',       label: 'Depósitos',      route: '/deposits'   },
     { icon: 'person',           label: 'Mi perfil',      route: '/profile'    },
   ];
 }

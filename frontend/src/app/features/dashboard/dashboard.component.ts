@@ -77,6 +77,7 @@ export class DashboardComponent implements OnInit {
   }
 
   isDebit(transaction: Transaction): boolean {
-    return transaction.type === 'TRANSFERENCIA_ENVIADA';
+    const myAccountNumbers = this.accounts.map(a => a.accountNumber);
+    return !!transaction.originAccountNumber && myAccountNumbers.includes(transaction.originAccountNumber);
   }
 }

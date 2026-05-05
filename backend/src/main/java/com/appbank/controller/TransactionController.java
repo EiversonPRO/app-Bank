@@ -1,5 +1,6 @@
 package com.appbank.controller;
 
+import com.appbank.dto.request.DepositRequest;
 import com.appbank.dto.request.TransferRequest;
 import com.appbank.dto.response.ApiResponse;
 import com.appbank.dto.response.PageResponse;
@@ -21,6 +22,16 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
+
+    @PostMapping("/deposit")
+    public ResponseEntity<ApiResponse<TransactionResponse>> deposit(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody DepositRequest request) {
+
+        TransactionResponse response = transactionService.deposit(userDetails.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("Depósito realizado exitosamente", response));
+    }
 
     @PostMapping("/transfer")
     public ResponseEntity<ApiResponse<TransactionResponse>> transfer(

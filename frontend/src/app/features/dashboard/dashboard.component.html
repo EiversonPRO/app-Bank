@@ -83,7 +83,7 @@
                 <mat-icon>{{ isDebit(tx) ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
               </div>
               <div class="tx-info">
-                <p class="tx-description">{{ tx.description || (isDebit(tx) ? 'Transferencia enviada' : 'Transferencia recibida') }}</p>
+                <p class="tx-description">{{ tx.description || (tx.type === 'DEPOSITO' ? 'Depósito' : isDebit(tx) ? 'Transferencia enviada' : 'Transferencia recibida') }}</p>
                 <p class="tx-ref text-muted">{{ tx.referenceNumber }}</p>
               </div>
               <div class="tx-amount" [class.debit-text]="isDebit(tx)" [class.credit-text]="!isDebit(tx)">

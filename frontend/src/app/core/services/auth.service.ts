@@ -13,20 +13,28 @@ export class AuthService {
 
   private readonly TOKEN_KEY = 'appbank_token';
   private readonly USER_KEY  = 'appbank_user';
+  private readonly channel   = new BroadcastChannel('appbank_auth');
 
   currentUser = signal<AuthResponse | null>(this.getStoredUser());
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    this.channel.onmessage = (event) => {
+      if (event.data === 'logout') {
+        this.currentUser.set(null);
+        this.router.navigate(['/auth/login']);
+      }
+    };
+  }
 
   register(payload: { fullName: string; email: string; password: string; documentNumber: string; phone?: string }): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${environment.apiUrl}/auth/register`, payload).pipe(
-      tap(res => this.saveSession(res.data))
+      tap(res => { if (res?.data) this.saveSession(res.data); })
     );
   }
 
   login(payload: { email: string; password: string }): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${environment.apiUrl}/auth/login`, payload).pipe(
-      tap(res => this.saveSession(res.data))
+      tap(res => { if (res?.data) this.saveSession(res.data); })
     );
   }
 
@@ -34,6 +42,7 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
+    this.channel.postMessage('logout');
     this.router.navigate(['/auth/login']);
   }
 

@@ -54,6 +54,17 @@ export class RegisterComponent {
     });
   }
 
+  private extractError(err: any, fallback: string): string {
+    if (!err.error) return fallback;
+    if (err.error.message) return err.error.message;
+    // Backend validation returns a field-error map (400)
+    if (typeof err.error === 'object') {
+      const msgs = Object.values(err.error).filter(v => typeof v === 'string');
+      if (msgs.length) return (msgs as string[]).join(' | ');
+    }
+    return fallback;
+  }
+
   onSubmit(): void {
     if (this.registerForm.invalid || this.loading) return;
 
@@ -64,8 +75,8 @@ export class RegisterComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        const msg = err.error?.message || 'Error al registrarse. Intente nuevamente.';
-        this.snackBar.open(msg, 'Cerrar', { duration: 4000, panelClass: 'snack-error' });
+        const msg = this.extractError(err, 'Error al registrarse. Intente nuevamente.');
+        this.snackBar.open(msg, 'Cerrar', { duration: 5000, panelClass: 'snack-error' });
         this.loading = false;
       }
     });

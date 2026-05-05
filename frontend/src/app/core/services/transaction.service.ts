@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
-import { Transaction, TransferRequest, PageResponse } from '../models/transaction.model';
+import { Transaction, TransferRequest, DepositRequest, PageResponse } from '../models/transaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,10 @@ export class TransactionService {
 
   transfer(payload: TransferRequest): Observable<ApiResponse<Transaction>> {
     return this.http.post<ApiResponse<Transaction>>(`${this.base}/transfer`, payload);
+  }
+
+  deposit(payload: DepositRequest): Observable<ApiResponse<Transaction>> {
+    return this.http.post<ApiResponse<Transaction>>(`${this.base}/deposit`, payload);
   }
 
   getTransactionsByAccount(accountId: number, page = 0, size = 10): Observable<ApiResponse<PageResponse<Transaction>>> {

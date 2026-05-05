@@ -1,5 +1,6 @@
 package com.appbank.service;
 
+import com.appbank.dto.request.DepositRequest;
 import com.appbank.dto.request.TransferRequest;
 import com.appbank.dto.response.PageResponse;
 import com.appbank.dto.response.TransactionResponse;
@@ -27,6 +28,31 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
+
+    @Transactional
+    public TransactionResponse deposit(Long userId, DepositRequest request) {
+        Account account = accountRepository
+                .findByAccountNumberAndUserId(request.getAccountNumber(), userId)
+                .orElseThrow(() -> new AppException("Cuenta no encontrada o no te pertenece", HttpStatus.NOT_FOUND));
+
+        if (!account.isActive()) {
+            throw new AppException("La cuenta está inactiva", HttpStatus.BAD_REQUEST);
+        }
+
+        account.setBalance(account.getBalance().add(request.getAmount()));
+        accountRepository.save(account);
+
+        Transaction transaction = Transaction.builder()
+                .referenceNumber(generateReferenceNumber())
+                .type(TransactionType.DEPOSITO)
+                .amount(request.getAmount())
+                .description(request.getDescription())
+                .destinationAccount(account)
+                .build();
+
+        transaction = transactionRepository.save(transaction);
+        return toResponse(transaction);
+    }
 
     @Transactional
     public TransactionResponse transfer(Long userId, TransferRequest request) {
@@ -102,8 +128,7 @@ public class TransactionService {
 
     @Transactional(readOnly = true)
     public List<TransactionResponse> getRecentTransactions(Long userId) {
-        PageRequest pageable = PageRequest.of(0, 10);
-        return transactionRepository.findRecentByUserId(userId, pageable)
+        return transactionRepository.findRecentByUserId(userId)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());

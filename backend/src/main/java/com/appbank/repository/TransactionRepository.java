@@ -13,9 +13,16 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    @Query("SELECT t FROM Transaction t WHERE t.originAccount.id = :accountId OR t.destinationAccount.id = :accountId ORDER BY t.createdAt DESC")
+    @Query(
+            value = "SELECT * FROM transactions WHERE origin_account_id = :accountId OR destination_account_id = :accountId ORDER BY created_at DESC",
+            countQuery = "SELECT COUNT(*) FROM transactions WHERE origin_account_id = :accountId OR destination_account_id = :accountId",
+            nativeQuery = true
+    )
     Page<Transaction> findByAccountId(@Param("accountId") Long accountId, Pageable pageable);
 
-    @Query("SELECT t FROM Transaction t WHERE t.originAccount.user.id = :userId OR t.destinationAccount.user.id = :userId ORDER BY t.createdAt DESC")
-    List<Transaction> findRecentByUserId(@Param("userId") Long userId, Pageable pageable);
+    @Query(
+            value = "SELECT t.* FROM transactions t LEFT JOIN accounts a ON (t.origin_account_id = a.id OR t.destination_account_id = a.id) WHERE a.user_id = :userId ORDER BY t.created_at DESC LIMIT 10",
+            nativeQuery = true
+    )
+    List<Transaction> findRecentByUserId(@Param("userId") Long userId);
 }

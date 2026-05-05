@@ -54,6 +54,11 @@ export const routes: Routes = [
           import('./features/transfers/transfer.component').then(m => m.TransferComponent)
       },
       {
+        path: 'deposits',
+        loadComponent: () =>
+          import('./features/deposits/deposit.component').then(m => m.DepositComponent)
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/profile/profile.component').then(m => m.ProfileComponent)

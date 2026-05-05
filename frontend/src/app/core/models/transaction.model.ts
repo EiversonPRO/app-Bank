@@ -1,4 +1,4 @@
-export type TransactionType = 'TRANSFERENCIA_ENVIADA' | 'TRANSFERENCIA_RECIBIDA';
+export type TransactionType = 'TRANSFERENCIA_ENVIADA' | 'TRANSFERENCIA_RECIBIDA' | 'DEPOSITO';
 
 export interface Transaction {
   id: number;
@@ -23,6 +23,12 @@ export interface PageResponse<T> {
 export interface TransferRequest {
   originAccountNumber: string;
   destinationAccountNumber: string;
+  amount: number;
+  description?: string;
+}
+
+export interface DepositRequest {
+  accountNumber: string;
   amount: number;
   description?: string;
 }

@@ -52,13 +52,13 @@
                 <mat-icon>{{ isDebit(tx) ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
               </div>
               <div class="tx-info">
-                <p class="tx-description">{{ tx.description || (isDebit(tx) ? 'Transferencia enviada' : 'Transferencia recibida') }}</p>
+                <p class="tx-description">{{ tx.description || (tx.type === 'DEPOSITO' ? 'Depósito' : isDebit(tx) ? 'Transferencia enviada' : 'Transferencia recibida') }}</p>
                 <p class="tx-meta text-muted">
                   {{ tx.referenceNumber }} &bull; {{ tx.createdAt | date:'dd MMM yyyy, HH:mm':'':'es-CO' }}
                 </p>
               </div>
               <p class="tx-amount" [class.debit-text]="isDebit(tx)" [class.credit-text]="!isDebit(tx)">
-                {{ isDebit(tx) ? '-' : '+' }}{{ tx.amount | currency:'COP':'symbol':'1.0-0' }}
+                {{ isDebit(tx) ? '-' : '+' }}{{ (tx.amount ?? 0) | currency:'COP':'symbol':'1.0-0' }}
               </p>
             </div>
             @if (!last) { <mat-divider /> }
@@ -70,7 +70,7 @@
         [length]="transactionPage.totalElements"
         [pageSize]="pageSize"
         [pageIndex]="currentPage"
-        [pageSizeOptions]="[5, 10, 25]"
+        [pageSizeOptions]="[10, 25, 50]"
         (page)="onPageChange($event)"
         showFirstLastButtons>
       </mat-paginator>

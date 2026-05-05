@@ -47,6 +47,16 @@ export class LoginComponent {
     });
   }
 
+  private extractError(err: any, fallback: string): string {
+    if (!err.error) return fallback;
+    if (err.error.message) return err.error.message;
+    if (typeof err.error === 'object') {
+      const msgs = Object.values(err.error).filter(v => typeof v === 'string');
+      if (msgs.length) return (msgs as string[]).join(' | ');
+    }
+    return fallback;
+  }
+
   onSubmit(): void {
     if (this.loginForm.invalid || this.loading) return;
 
@@ -56,8 +66,8 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        const msg = err.error?.message || 'Error al iniciar sesión. Intente nuevamente.';
-        this.snackBar.open(msg, 'Cerrar', { duration: 4000, panelClass: 'snack-error' });
+        const msg = this.extractError(err, 'Credenciales incorrectas. Intente nuevamente.');
+        this.snackBar.open(msg, 'Cerrar', { duration: 5000, panelClass: 'snack-error' });
         this.loading = false;
       }
     });

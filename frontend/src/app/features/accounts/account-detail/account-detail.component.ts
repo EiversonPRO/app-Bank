@@ -82,6 +82,6 @@ export class AccountDetailComponent implements OnInit {
   }
 
   isDebit(tx: Transaction): boolean {
-    return tx.type === 'TRANSFERENCIA_ENVIADA';
+    return tx.originAccountNumber === this.account?.accountNumber;
   }
 }

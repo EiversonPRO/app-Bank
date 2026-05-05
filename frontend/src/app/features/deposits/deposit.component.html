@@ -1,0 +1,106 @@
+<div class="page-container">
+  <h1 class="page-title">Depósitos</h1>
+
+  @if (lastTransaction) {
+    <mat-card class="success-card card-shadow">
+      <mat-card-content>
+        <div class="success-content">
+          <div class="success-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <h2>¡Depósito exitoso!</h2>
+          <p class="ref-number">Ref. {{ lastTransaction.referenceNumber }}</p>
+          <p class="deposit-amount">{{ lastTransaction.amount | currency:'COP':'symbol':'1.0-0' }}</p>
+          <div class="deposit-detail">
+            <div class="detail-row">
+              <span class="text-muted">Cuenta acreditada</span>
+              <span>{{ lastTransaction.destinationAccountNumber }}</span>
+            </div>
+            @if (lastTransaction.description) {
+              <div class="detail-row">
+                <span class="text-muted">Concepto</span>
+                <span>{{ lastTransaction.description }}</span>
+              </div>
+            }
+          </div>
+          <button mat-raised-button color="primary" (click)="newDeposit()">
+            Realizar otro depósito
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  } @else {
+
+    <div class="deposit-layout">
+      <mat-card class="deposit-form-card card-shadow">
+        <mat-card-header>
+          <mat-card-title>Nuevo depósito</mat-card-title>
+          <mat-card-subtitle>Consigna dinero en tus cuentas AppBank</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="depositForm" (ngSubmit)="onSubmit()">
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Cuenta destino</mat-label>
+              <mat-select formControlName="accountNumber">
+                @if (loadingAccounts) {
+                  <mat-option disabled>Cargando cuentas...</mat-option>
+                }
+                @for (account of accounts; track account.id) {
+                  <mat-option [value]="account.accountNumber">
+                    {{ account.accountType === 'AHORROS' ? 'Ahorros' : 'Corriente' }} —
+                    {{ account.accountNumber }} —
+                    {{ account.balance | currency:'COP':'symbol':'1.0-0' }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (depositForm.get('accountNumber')?.hasError('required') && depositForm.get('accountNumber')?.touched) {
+                <mat-error>Selecciona una cuenta</mat-error>
+              }
+            </mat-form-field>
+
+            @if (selectedAccount) {
+              <div class="balance-info mt-8">
+                <mat-icon>account_balance_wallet</mat-icon>
+                <span>Saldo actual: <strong>{{ selectedAccount.balance | currency:'COP':'symbol':'1.0-0' }}</strong></span>
+              </div>
+            }
+
+            <mat-form-field appearance="outline" class="full-width mt-16">
+              <mat-label>Monto a depositar</mat-label>
+              <input matInput type="number" formControlName="amount" placeholder="0" min="1000">
+              <mat-icon matPrefix>attach_money</mat-icon>
+              <mat-hint>Mínimo $1.000 — Máximo $50.000.000</mat-hint>
+              @if (depositForm.get('amount')?.hasError('required') && depositForm.get('amount')?.touched) {
+                <mat-error>El monto es obligatorio</mat-error>
+              }
+              @if (depositForm.get('amount')?.hasError('min') && depositForm.get('amount')?.touched) {
+                <mat-error>El monto mínimo es $1.000</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width mt-16">
+              <mat-label>Descripción (opcional)</mat-label>
+              <input matInput formControlName="description" placeholder="Concepto del depósito">
+              <mat-hint>Máximo 200 caracteres</mat-hint>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit"
+                    class="submit-btn mt-24"
+                    [disabled]="depositForm.invalid || loading">
+              @if (loading) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                <mat-icon>add_circle</mat-icon>
+                Depositar
+              }
+            </button>
+
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>
